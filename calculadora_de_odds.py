@@ -9,20 +9,22 @@ def calcular_odd_match_handicap(vitorias_casa, empates, derrotas, info_type="H2H
     prob_empate = empates / (total_partidas + epsilon)
     prob_vitoria_visitante = derrotas / (total_partidas + epsilon)
 
-    odd_vitoria_casa = 1 / prob_vitoria_casa
-    odd_empate = 1 / prob_empate
-    odd_vitoria_visitante = 1 / prob_vitoria_visitante
+    odd_vitoria_casa = 1 / (prob_vitoria_casa + epsilon)
+    odd_empate = 1 / (prob_empate + epsilon)
+    odd_vitoria_visitante = 1 / (prob_vitoria_visitante + epsilon)
 
     if info_type == "H2H":
         linha_handicap = 0.0
     elif info_type == "Casa":
-        linha_handicap = (vitorias_casa - derrotas) / total_partidas
+        # Supondo que vitorias_casa, empates, derrotas sejam as últimas 5 partidas em casa
+        linha_handicap = (vitorias_casa - derrotas) / (total_partidas + epsilon)
     elif info_type == "Visitante":
-        linha_handicap = (vitorias_casa - derrotas) / total_partidas
+        # Supondo que vitorias_casa, empates, derrotas sejam as últimas 5 partidas fora de casa
+        linha_handicap = (vitorias_casa - derrotas) / (total_partidas + epsilon)
 
-    odd_vitoria_casa_handicap = 1 / (prob_vitoria_casa + linha_handicap)
-    odd_empate_handicap = 1 / (prob_empate + linha_handicap)
-    odd_vitoria_visitante_handicap = 1 / (prob_vitoria_visitante + linha_handicap)
+    odd_vitoria_casa_handicap = 1 / (prob_vitoria_casa + linha_handicap + epsilon)
+    odd_empate_handicap = 1 / (prob_empate + linha_handicap + epsilon)
+    odd_vitoria_visitante_handicap = 1 / (prob_vitoria_visitante + linha_handicap + epsilon)
 
     return {
         "Match Odds": {
