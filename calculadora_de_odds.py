@@ -16,9 +16,10 @@ def calcular_odd_justa(vitorias_casa, empates, derrotas):
     # Calcula a linha de handicap (por exemplo, linha 0)
     linha_handicap = (vitorias_casa - derrotas) / total_partidas
 
-    # Calcula as odds justas para Handicap Asiático (linha 0)
+    # Calcula as odds justas para Handicap Asiático
     odd_vitoria_casa_handicap = 1 / (prob_vitoria_casa + linha_handicap)
-    odd_vitoria_visitante_handicap = 1 / (prob_vitoria_visitante - linha_handicap)
+    odd_empate_handicap = 1 / (prob_empate + linha_handicap)
+    odd_vitoria_visitante_handicap = 1 / (prob_vitoria_visitante + linha_handicap)
 
     return {
         "Match Odds": {
@@ -29,6 +30,7 @@ def calcular_odd_justa(vitorias_casa, empates, derrotas):
         "Handicap Asiático": {
             "Linha de Handicap": linha_handicap,
             "Odd Vitória da Casa (Handicap)": odd_vitoria_casa_handicap,
+            "Odd Empate (Handicap)": odd_empate_handicap,
             "Odd Vitória Visitante (Handicap)": odd_vitoria_visitante_handicap,
         },
     }
@@ -50,7 +52,8 @@ st.write("Odd Vitória da Casa:", round(odds_justas["Match Odds"]["Odd Vitória 
 st.write("Odd Empate:", round(odds_justas["Match Odds"]["Odd Empate"], 2))
 st.write("Odd Vitória Visitante:", round(odds_justas["Match Odds"]["Odd Vitória Visitante"], 2))
 
-st.write("### Handicap Asiático (Linha 0):")
+st.write("### Handicap Asiático:")
 st.write("Linha de Handicap:", round(odds_justas["Handicap Asiático"]["Linha de Handicap"], 2))
 st.write("Odd Vitória da Casa (Handicap):", round(odds_justas["Handicap Asiático"]["Odd Vitória da Casa (Handicap)"], 2))
+st.write("Odd Empate (Handicap):", round(odds_justas["Handicap Asiático"]["Odd Empate (Handicap)"], 2))
 st.write("Odd Vitória Visitante (Handicap):", round(odds_justas["Handicap Asiático"]["Odd Vitória Visitante (Handicap)"], 2))
