@@ -1,80 +1,54 @@
 import streamlit as st
 
-def calcular_odd_match_handicap(vitorias_casa, empates, derrotas, info_type="H2H"):
-    total_partidas = vitorias_casa + empates + derrotas
+def calcular_probabilidades(vitorias, empates, derrotas):
+    total_partidas = vitorias + empates + derrotas
+    total_partidas = max(total_partidas, 1)  # Evita divisão por zero
+    prob_vitoria = vitorias / total_partidas
+    prob_empate = empates / total_partidas
+    prob_derrota = derrotas / total_partidas
+    return prob_vitoria, prob_empate, prob_derrota
 
-    # Adiciona uma pequena margem para evitar divisão por zero
-    epsilon = 1e-9
-    prob_vitoria_casa = vitorias_casa / (total_partidas + epsilon)
-    prob_empate = empates / (total_partidas + epsilon)
-    prob_vitoria_visitante = derrotas / (total_partidas + epsilon)
+def calcular_odds(prob_vitoria, prob_empate, prob_derrota):
+    odd_vitoria = 1 / prob_vitoria if prob_vitoria > 0 else float('inf')
+    odd_empate = 1 / prob_empate if prob_empate > 0 else float('inf')
+    odd_derrota = 1 / prob_derrota if prob_derrota > 0 else float('inf')
+    return odd_vitoria, odd_empate, odd_derrota
 
-    odd_vitoria_casa = 1 / (prob_vitoria_casa + epsilon)
-    odd_empate = 1 / (prob_empate + epsilon)
-    odd_vitoria_visitante = 1 / (prob_vitoria_visitante + epsilon)
-
-    if info_type == "H2H":
-        linha_handicap = 0.0
-    elif info_type == "Casa":
-        # Supondo que vitorias_casa, empates, derrotas sejam as últimas 5 partidas em casa
-        linha_handicap = (vitorias_casa - derrotas) / (total_partidas + epsilon)
-    elif info_type == "Visitante":
-        # Supondo que vitorias_casa, empates, derrotas sejam as últimas 5 partidas fora de casa
-        linha_handicap = (vitorias_casa - derrotas) / (total_partidas + epsilon)
-
-    odd_vitoria_casa_handicap = 1 / (prob_vitoria_casa + linha_handicap + epsilon)
-    odd_empate_handicap = 1 / (prob_empate + linha_handicap + epsilon)
-    odd_vitoria_visitante_handicap = 1 / (prob_vitoria_visitante + linha_handicap + epsilon)
-
-    return {
-        "Match Odds": {
-            "Odd Vitória da Casa": odd_vitoria_casa,
-            "Odd Empate": odd_empate,
-            "Odd Vitória Visitante": odd_vitoria_visitante,
-        },
-        "Handicap Asiático": {
-            "Linha de Handicap": linha_handicap,
-            "Odd Vitória da Casa (Handicap)": odd_vitoria_casa_handicap,
-            "Odd Empate (Handicap)": odd_empate_handicap,
-            "Odd Vitória Visitante (Handicap)": odd_vitoria_visitante_handicap,
-        },
-    }
+def calcular_handicap(prob_vitoria, prob_empate, prob_derrota):
+    linha_handicap = (prob_vitoria + prob_empate - prob_derrota) / 2
+    linha_handicap = max(linha_handicap, 0)  # Garante que a linha de handicap seja no mínimo 0
+    odd_vitoria_handicap = 1 / (prob_vitoria + linha_handicap) if prob_vitoria + linha_handicap > 0 else float('inf')
+    odd_empate_handicap = 1 / (prob_empate + linha_handicap) if prob_empate + linha_handicap > 0 else float('inf')
+    odd_derrota_handicap = 1 / (prob_derrota + linha_handicap) if prob_derrota + linha_handicap > 0 else float('inf')
+    return linha_handicap, odd_vitoria_handicap, odd_empate_handicap, odd_derrota_handicap
 
 # Interface do Streamlit
 st.title("Calculadora de Odds")
 
-# Informações H2H
-st.header("H2H (Head-to-Head)")
-vitorias_casa_h2h = st.slider("Número de Vitórias da Casa H2H:", min_value=0, max_value=10, value=5, key="vc_h2h")
-empates_h2h = st.slider("Número de Empates H2H:", min_value=0, max_value=10, value=3, key="e_h2h")
-derrotas_h2h = st.slider("Número de Derrotas H2H:", min_value=0, max_value=10, value=2, key="d_h2h")
+# Informações Últimos 5 Jogos
+st.header("Últimos 5 Jogos")
+vitorias = st.slider("Número de Vitórias:", min_value=0, max_value=5, value=2)
+empates = st.slider("Número de Empates:", min_value=0, max_value=5, value=1)
+derrotas = st.slider("Número de Derrotas:", min_value=0, max_value=5, value=2)
 
-odds_h2h = calcular_odd_match_handicap(vitorias_casa_h2h, empates_h2h, derrotas_h2h, "H2H")
-st.write("### Odds para H2H:")
-st.write("Odd Vitória da Casa:", round(odds_h2h["Match Odds"]["Odd Vitória da Casa"], 2))
-st.write("Odd Empate:", round(odds_h2h["Match Odds"]["Odd Empate"], 2))
-st.write("Odd Vitória Visitante:", round(odds_h2h["Match Odds"]["Odd Vitória Visitante"], 2))
+# Cálculos
+prob_vitoria, prob_empate, prob_derrota = calcular_probabilidades(vitorias, empates, derrotas)
+odd_vitoria, odd_empate, odd_derrota = calcular_odds(prob_vitoria, prob_empate, prob_derrota)
+linha_handicap, odd_vitoria_handicap, odd_empate_handicap, odd_derrota_handicap = calcular_handicap(prob_vitoria, prob_empate, prob_derrota)
 
-# Informações Últimos 5 Jogos Time da Casa
-st.header("Últimos 5 Jogos - Time da Casa")
-vitorias_casa_casa = st.slider("Número de Vitórias da Casa Últimos 5 Jogos:", min_value=0, max_value=5, value=2, key="vc_casa")
-empates_casa = st.slider("Número de Empates Últimos 5 Jogos:", min_value=0, max_value=5, value=2, key="e_casa")
-derrotas_casa = st.slider("Número de Derrotas Últimos 5 Jogos:", min_value=0, max_value=5, value=1, key="d_casa")
+# Exibição dos Resultados
+st.write("### Probabilidades:")
+st.write(f"Probabilidade de Vitória: {prob_vitoria:.2%}")
+st.write(f"Probabilidade de Empate: {prob_empate:.2%}")
+st.write(f"Probabilidade de Derrota: {prob_derrota:.2%}")
 
-odds_casa = calcular_odd_match_handicap(vitorias_casa_casa, empates_casa, derrotas_casa, "Casa")
-st.write("### Odds para Últimos 5 Jogos - Time da Casa:")
-st.write("Odd Vitória da Casa:", round(odds_casa["Match Odds"]["Odd Vitória da Casa"], 2))
-st.write("Odd Empate:", round(odds_casa["Match Odds"]["Odd Empate"], 2))
-st.write("Odd Vitória Visitante:", round(odds_casa["Match Odds"]["Odd Vitória Visitante"], 2))
+st.write("### Odds:")
+st.write(f"Odd Vitória: {odd_vitoria:.2f}")
+st.write(f"Odd Empate: {odd_empate:.2f}")
+st.write(f"Odd Derrota: {odd_derrota:.2f}")
 
-# Informações Últimos 5 Jogos Time Visitante
-st.header("Últimos 5 Jogos - Time Visitante")
-vitorias_casa_visitante = st.slider("Número de Vitórias da Casa Últimos 5 Jogos:", min_value=0, max_value=5, value=3, key="vc_visitante")
-empates_visitante = st.slider("Número de Empates Últimos 5 Jogos:", min_value=0, max_value=5, value=1, key="e_visitante")
-derrotas_visitante = st.slider("Número de Derrotas Últimos 5 Jogos:", min_value=0, max_value=5, value=1, key="d_visitante")
-
-odds_visitante = calcular_odd_match_handicap(vitorias_casa_visitante, empates_visitante, derrotas_visitante, "Visitante")
-st.write("### Odds para Últimos 5 Jogos - Time Visitante:")
-st.write("Odd Vitória da Casa:", round(odds_visitante["Match Odds"]["Odd Vitória da Casa"], 2))
-st.write("Odd Empate:", round(odds_visitante["Match Odds"]["Odd Empate"], 2))
-st.write("Odd Vitória Visitante:", round(odds_visitante["Match Odds"]["Odd Vitória Visitante"], 2))
+st.write("### Handicap Asiático:")
+st.write(f"Linha de Handicap: {linha_handicap:.2f}")
+st.write(f"Odd Vitória (Handicap): {odd_vitoria_handicap:.2f}")
+st.write(f"Odd Empate (Handicap): {odd_empate_handicap:.2f}")
+st.write(f"Odd Derrota (Handicap): {odd_derrota_handicap:.2f}")
