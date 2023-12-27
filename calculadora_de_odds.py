@@ -47,9 +47,9 @@ st.title("Calculadora de Odds")
 
 # Informações H2H
 st.header("H2H (Head-to-Head)")
-vitorias_casa_h2h = st.slider("Número de Vitórias da Casa:", min_value=0, max_value=10, value=5)
-empates_h2h = st.slider("Número de Empates:", min_value=0, max_value=10, value=3)
-derrotas_h2h = st.slider("Número de Derrotas:", min_value=0, max_value=10, value=2)
+vitorias_casa_h2h = st.slider("Número de Vitórias da Casa H2H:", min_value=0, max_value=10, value=5, key="vc_h2h")
+empates_h2h = st.slider("Número de Empates H2H:", min_value=0, max_value=10, value=3, key="e_h2h")
+derrotas_h2h = st.slider("Número de Derrotas H2H:", min_value=0, max_value=10, value=2, key="d_h2h")
 
 # Calcula as odds para H2H
 odds_h2h = calcular_odd_match_handicap(vitorias_casa_h2h, empates_h2h, derrotas_h2h, "H2H")
@@ -60,9 +60,9 @@ st.write("Odd Vitória Visitante:", round(odds_h2h["Match Odds"]["Odd Vitória V
 
 # Informações Últimos 5 Jogos Time da Casa
 st.header("Últimos 5 Jogos - Time da Casa")
-vitorias_casa_casa = st.slider("Número de Vitórias da Casa:", min_value=0, max_value=5, value=2)
-empates_casa = st.slider("Número de Empates:", min_value=0, max_value=5, value=2)
-derrotas_casa = st.slider("Número de Derrotas:", min_value=0, max_value=5, value=1)
+vitorias_casa_casa = st.slider("Número de Vitórias da Casa Últimos 5 Jogos:", min_value=0, max_value=5, value=2, key="vc_casa")
+empates_casa = st.slider("Número de Empates Últimos 5 Jogos:", min_value=0, max_value=5, value=2, key="e_casa")
+derrotas_casa = st.slider("Número de Derrotas Últimos 5 Jogos:", min_value=0, max_value=5, value=1, key="d_casa")
 
 # Calcula as odds para Últimos 5 Jogos - Time da Casa
 odds_casa = calcular_odd_match_handicap(vitorias_casa_casa, empates_casa, derrotas_casa, "Casa")
@@ -73,9 +73,9 @@ st.write("Odd Vitória Visitante:", round(odds_casa["Match Odds"]["Odd Vitória 
 
 # Informações Últimos 5 Jogos Time Visitante
 st.header("Últimos 5 Jogos - Time Visitante")
-vitorias_casa_visitante = st.slider("Número de Vitórias da Casa:", min_value=0, max_value=5, value=3)
-empates_visitante = st.slider("Número de Empates:", min_value=0, max_value=5, value=1)
-derrotas_visitante = st.slider("Número de Derrotas:", min_value=0, max_value=5, value=1)
+vitorias_casa_visitante = st.slider("Número de Vitórias da Casa Últimos 5 Jogos:", min_value=0, max_value=5, value=3, key="vc_visitante")
+empates_visitante = st.slider("Número de Empates Últimos 5 Jogos:", min_value=0, max_value=5, value=1, key="e_visitante")
+derrotas_visitante = st.slider("Número de Derrotas Últimos 5 Jogos:", min_value=0, max_value=5, value=1, key="d_visitante")
 
 # Calcula as odds para Últimos 5 Jogos - Time Visitante
 odds_visitante = calcular_odd_match_handicap(vitorias_casa_visitante, empates_visitante, derrotas_visitante, "Visitante")
