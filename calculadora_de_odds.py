@@ -13,8 +13,8 @@ def calcular_odd_justa(vitorias_casa, empates, derrotas):
     odd_empate = 1 / prob_empate
     odd_vitoria_visitante = 1 / prob_vitoria_visitante
 
-    # Calcula a linha de handicap (por exemplo, linha 0)
-    linha_handicap = (vitorias_casa - derrotas) / total_partidas
+    # Calcula a linha de handicap (por exemplo, linha 0.5)
+    linha_handicap = 0.5 * (vitorias_casa - derrotas) / total_partidas
 
     # Calcula as odds justas para Handicap Asiático
     odd_vitoria_casa_handicap = 1 / (prob_vitoria_casa + linha_handicap)
